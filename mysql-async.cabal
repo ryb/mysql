@@ -24,6 +24,7 @@ build-type:     Custom
 cabal-version:  >= 1.6
 extra-source-files:
     include/mysql_signals.h
+    include/mysql_async.h
     README.markdown
 
 flag developer
@@ -32,6 +33,7 @@ flag developer
 
 library
   c-sources: cbits/mysql_signals.c
+             cbits/mysql_async.c
 
   include-dirs: include
 
