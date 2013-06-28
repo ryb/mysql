@@ -32,6 +32,8 @@ module Database.MySQL.Base.C
     , mysql_stat
     -- * Querying
     , mysql_real_query
+    , mysql_send_query
+    , mysql_read_query_result
     , mysql_insert_id
     -- ** Escaping
     , mysql_real_escape_string
@@ -63,6 +65,8 @@ module Database.MySQL.Base.C
     -- * Error handling
     , mysql_errno
     , mysql_error
+    -- * Internals
+    , mysql_fd
     ) where
 
 #include "mysql_signals.h"
@@ -207,6 +211,12 @@ foreign import ccall unsafe "mysql_signals.h _hs_mysql_stat" mysql_stat
 foreign import ccall unsafe "mysql_signals.h _hs_mysql_real_query" mysql_real_query
     :: Ptr MYSQL -> CString -> CULong -> IO CInt
 
+foreign import ccall unsafe "mysql_signals.h _hs_mysql_send_query" mysql_send_query
+    :: Ptr MYSQL -> CString -> CULong -> IO CInt
+
+foreign import ccall unsafe "mysql_signals.h _hs_mysql_read_query_result" mysql_read_query_result
+    :: Ptr MYSQL -> IO CInt
+
 foreign import ccall safe mysql_insert_id
     :: Ptr MYSQL -> IO CULLong
 
@@ -276,3 +286,6 @@ foreign import ccall safe mysql_errno
 
 foreign import ccall safe mysql_error
     :: Ptr MYSQL -> IO CString
+
+foreign import ccall safe mysql_fd
+    :: Ptr MYSQL -> IO CInt

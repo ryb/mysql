@@ -76,6 +76,25 @@ int STDCALL _hs_mysql_real_query(MYSQL *mysql, const char *q,
     return ret;
 }
 
+int STDCALL _hs_mysql_send_query(MYSQL *mysql, const char *q,
+                 unsigned long length)
+{
+    int ret;
+    block_rts_signals();
+    ret = mysql_send_query(mysql, q, length);
+    unblock_rts_signals();
+    return ret;
+}
+
+int STDCALL _hs_mysql_read_query_result(MYSQL *mysql)
+{
+    int ret;
+    block_rts_signals();
+    ret = mysql_read_query_result(mysql);
+    unblock_rts_signals();
+    return ret;
+}
+
 const char *STDCALL _hs_mysql_stat(MYSQL *mysql)
 {
     const char *ret;

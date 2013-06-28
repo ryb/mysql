@@ -19,6 +19,8 @@ void STDCALL _hs_mysql_close(MYSQL *sock);
 int STDCALL _hs_mysql_ping(MYSQL *mysql);
 int STDCALL _hs_mysql_real_query(MYSQL *mysql, const char *q,
 				 unsigned long length);
+int STDCALL _hs_mysql_send_query(MYSQL *mysql, const char *q,
+                 unsigned long length);
 const char *STDCALL _hs_mysql_stat(MYSQL *mysql);
 my_bool STDCALL _hs_mysql_commit(MYSQL * mysql);
 my_bool STDCALL _hs_mysql_rollback(MYSQL * mysql);

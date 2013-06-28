@@ -75,6 +75,7 @@ module Database.MySQL.Base
     ) where
 
 import Control.Applicative ((<$>), (<*>))
+import Control.Concurrent.MVar (newEmptyMVar, putMVar, takeMVar)
 import Control.Exception (Exception, throw)
 import Control.Monad (forM_, unless, when)
 import Data.ByteString.Char8 ()
@@ -93,8 +94,10 @@ import Foreign.Concurrent (newForeignPtr)
 import Foreign.ForeignPtr hiding (newForeignPtr)
 import Foreign.Marshal.Array (peekArray)
 import Foreign.Ptr (Ptr, castPtr, nullPtr)
+import GHC.Event (evtRead, getSystemEventManager, registerFd, unregisterFd)
 import System.IO.Unsafe (unsafePerformIO)
 import System.Mem.Weak (Weak, deRefWeak, mkWeakPtr)
+import System.Posix.Types (Fd (Fd))
 
 -- $license
 --
@@ -374,9 +377,24 @@ selectDB conn db =
       mysql_select_db ptr cdb >>= check "selectDB" conn
 
 query :: Connection -> ByteString -> IO ()
-query conn q = withConn conn $ \ptr ->
-  unsafeUseAsCStringLen q $ \(p,l) ->
-  mysql_real_query ptr p (fromIntegral l) >>= check "query" conn
+query conn q = getSystemEventManager >>= \mEM -> case mEM of
+    Just eventManager -> withConn conn $ \ptr -> do
+        lock <- newEmptyMVar
+        unsafeUseAsCStringLen q $ \(p,l) -> mysql_send_query ptr p
+            (fromIntegral l) >>= check "mysql_send_query" conn
+        fd <- Fd <$> mysql_fd ptr
+        let callback key event = if event == evtRead then do
+            mysql_read_query_result ptr >>= check "mysql_read_query_result"
+                conn
+            release lock
+            unregisterFd eventManager key
+            else return ()
+        _ <- registerFd eventManager callback fd evtRead
+        acquire lock
+    Nothing -> error "No event manager present. Use threaded runtime."
+    where
+        acquire = takeMVar
+        release = flip putMVar ()
 
 -- | Return the value generated for an @AUTO_INCREMENT@ column by the
 -- previous @INSERT@ or @UPDATE@ statement.
