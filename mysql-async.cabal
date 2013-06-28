@@ -1,9 +1,9 @@
-name:           mysql
+name:           mysql-async
 version:        0.1.1.4
-homepage:       https://github.com/bos/mysql
-bug-reports:    https://github.com/bos/mysql/issues
+homepage:       https://github.com/ryb/mysql
+bug-reports:    https://github.com/ryb/mysql/issues
 synopsis:       A low-level MySQL client library.
-description:    
+description:
     A low-level client library for the MySQL database, implemented as
     bindings to the C @mysqlclient@ API.
     .
@@ -16,9 +16,9 @@ description:
     subject to the terms of the GPL.
 license:        BSD3
 license-file:   LICENSE
-author:         Bryan O'Sullivan <bos@serpentine.com>
-maintainer:     Bryan O'Sullivan <bos@serpentine.com>
-copyright:      2011 MailRank, Inc.
+author:         Bryan O'Sullivan <bos@serpentine.com>, Ryan Burton <ryb@umich.edu>
+maintainer:     Ryan Burton <ryb@umich.edu>
+copyright:      2011 MailRank, Inc., 2013 Ryan Burton
 category:       Database
 build-type:     Custom
 cabal-version:  >= 1.6
@@ -55,8 +55,4 @@ library
 
 source-repository head
   type:     git
-  location: http://github.com/bos/mysql
-
-source-repository head
-  type:     mercurial
-  location: http://bitbucket.org/bos/mysql
+  location: http://github.com/ryb/mysql
